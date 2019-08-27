@@ -1,0 +1,171 @@
+swagger: '1.0'
+info:
+  description: Create, View, Update and delete a emergency contact phone. 
+  version: '1.0'
+  title: Emergency Contact Service
+  termsOfService: 'https://www.qut.edu.au/additional/privacy'
+  contact:
+    name: Integration Services
+    email: eis-is-is@qut.edu.au
+  license:
+    name: QUT
+    url: 'https://www.qut.edu.au/additional/copyright'
+basePath: /qut/identity/emergency-contact/v1
+
+securityDefinitions:
+  oidc:
+    type: oauth2
+    description: Open ID Connect
+    flow: application
+    tokenUrl: https://esoe-tst.qut.edu.au/auth/realms/QUT/protocol/openid-connect/token
+    scopes:
+      openid: default scope
+
+paths:
+  /emergency-contact/username/{username}:
+    get:
+      tags:
+        - Emergency Contact (CRUD)
+      summary: Retrieve all Emergency Contacts belonging to {username}
+      description:
+        Retrieve all emergency contacts for the user associated {username}
+      operationId: getAllEmergencyContacts
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: A valid QUT username.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Emergency Contacts successfully retrieved
+          schema:
+            $ref: '#/definitions/EmergencyContacts'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+#------------------------- Models -------------------------#
+
+definitions:
+  EmergencyContact:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          EMERGENCY1=1,
+          EMERGENCY2=2
+      name:
+        type: string
+        example: 'John Smith'
+      homePhone:
+        type: string
+        example: '(07)32107654'
+      workPhone:
+        type: string
+        example: '(07)32104567'
+      mobile:
+        type: string
+        example: '(04)32109876'
+      lastUpdated:
+        type: date
+        example: false
+      dateCreated:
+        type: date
+        example: false
+    required:
+      - contactId
+      - id
+
+  EmergencyContacts:
+    type: array
+    items:
+      $ref: '#/definitions/EmergencyContact:'
+
+  #------------------------- Responses -------------------------#
+  ErrorResponse:
+    type: object
+    properties:
+      timestamp:
+        type: number
+      status:
+        type: string
+      error:
+        type: string
+      message:
+        type: string
+      exception:
+        type: string
+      path:
+        type: string
+    required:
+      - error
+      - message
+  SuccessResponse:
+    type: object
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+    required:
+      - status
+      - message
+
+responses:
+  Success:
+    description: requested operation was successful
+    schema:
+      $ref: '#/definitions/SuccessResponse'
+    examples:
+      application/json:
+        status: "OK"
+        message: "Requested Operation was successful"
+  Forbidden:
+    description:
+      Returned if an invalid client submits a token on behalf of a user.
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        timestamp: 1503993519399
+        error: "Forbidden"
+        message: "Client is not authorized"
+  Unauthorized:
+    description:
+      invalid authentication token.
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        timestamp: 1503993519399
+        error: "Unauthorized"
+        message: "Not authorized"
+  BadRequest:
+    description:
+      Returned if submitted data/params are incorrect
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        timestamp: 1503993519399
+        error: "BadRequest"
+        message: "validation failed for some fields or params"
+  NotFound:
+    description:
+      could not find a resource for this url
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        timestamp: 1503993519399
+        status: 404
+        error: "NotFound"
+        message: "could not find a resource for this url"
+        exception: "NotFoundException"
+        path: "/emergency-contact/test-user"
