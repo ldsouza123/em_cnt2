@@ -1,4 +1,4 @@
-swagger: '1.0'
+swagger: '2.0'
 info:
   description: Create, View, Update and delete a emergency contact phone. 
   version: '1.0'
