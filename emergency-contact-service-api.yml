@@ -83,13 +83,13 @@ paths:
         '404':
           $ref: '#/responses/NotFound'
 
-  /emergency-contact/{phoneId}/username/{username}:
+  /emergency-contact/username/{username}:
     put:
       tags:
         - Emergency Contact (CRUD)
-      summary: update a single emergency contact
+      summary: update all emergency contacts
       description:
-        Update emergency contact of the user associated with the {id}.
+        Update emergency contact of the user
       operationId: updateEmergencyContact
       consumes:
         - application/json
@@ -99,11 +99,6 @@ paths:
         - name: username
           in: path
           description: A valid QUT username.
-          required: true
-          type: string
-        - name: contactId
-          description: a unique contact identifier provided by GET endpoint
-          in: path
           required: true
           type: string
         - name: Response
@@ -122,6 +117,7 @@ paths:
         '404':
           $ref: '#/responses/NotFound'
 
+  /emergency-contact/username/{username}/type/{contactId}:
     delete:
       tags:
         - EmergencyContact (CRUD)
@@ -134,10 +130,10 @@ paths:
           required: true
           type: string
           description: A valid QUT username.
-        - name: phoneId
-          description: a unique phone identifier provided by GET endpoint
+        - name: contactId
+          description: a unique contact identifier provided by GET endpoint
           in: path
-          required: true
+          required: false
           type: string
       responses:
         '200':
@@ -153,22 +149,22 @@ paths:
     get:
       tags:
         - Emergency Contact (Read Only)
-      summary: Retrieve phones based on a given emergency
-      operationId: getContactPhoneWithType
+      summary: Retrieve emergency contacts based on a given contactId
+      operationId: getEmergencyContact
       parameters:
         - name: username
           description: A valid QUT username.
           in: path
           required: true
           type: string
-        - name: contactId
+        - name: contactId type
           description: a valid contact id
           in: path
           required: true
           type: string
       responses:
         '200':
-          description: Contact phones successfully retrieved with type {type}
+          description: Emergency Contact successfully retrieved with type {contactId}
           schema:
             $ref: '#/definitions/EmergencyContacts'
         '400':
@@ -184,12 +180,6 @@ definitions:
   EmergencyContact:
     type: object
     properties:
-      id:
-        type: integer
-        example: 123456
-      identity:
-        type: string
-        example: 'a8d26dad-588d-4e5d-98a6-8b9c0a1'
       type:
         type: string
         enum:
@@ -204,18 +194,18 @@ definitions:
       workPhone:
         type: string
         example: '(07)32104567'
-      mobilePhone:
+      mobile:
         type: string
         example: '(04)32109876'
-      lastModifiedDate:
+      lastUpdated:
         type: date
         example: false
-      createdDate:
+      dateCreated:
         type: date
         example: false
     required:
-      - type
-      - phoneNumber
+      - contactId
+      - id
 
   EmergencyContacts:
     type: array
