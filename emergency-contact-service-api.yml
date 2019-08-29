@@ -22,13 +22,12 @@ securityDefinitions:
       openid: default scope
 
 paths:
-  /emergency-contact/username/{username}:
+  /emergency-contacts/username/{username}:
     get:
       tags:
         - Emergency Contact (CRUD)
       summary: Retrieve all Emergency Contacts belonging to {username}
-      description:
-        Retrieve all emergency contacts for the user associated {username}
+      description: Retrieve all emergency contacts for the user associated {username}
       operationId: getAllEmergencyContacts
       produces:
         - application/json
@@ -49,6 +48,122 @@ paths:
           $ref: '#/responses/Forbidden'
         '404':
           $ref: '#/responses/NotFound'
+    post:
+      tags:
+        - Emergency Contact (CRUD)
+      summary: Create one to two new Emergency Contact.
+      description: Create one or two new Emergency Contact for the user associated with the submitted access token.
+      operationId: createEmergencyContact
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: A valid QUT username.
+          required: true
+          type: string
+        - name: Request
+          in: body
+          schema:
+            $ref: '#/definitions/EmergencyContacts'
+      responses:
+        '200':
+          description: Emergency Contacts successfully created
+          schema:
+            $ref: '#/definitions/EmergencyContacts'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+    put:
+      tags:
+        - Emergency Contact (CRUD)
+      summary: update all emergency contacts
+      description: Update emergency contacts of the user
+      operationId: updateEmergencyContact
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: A valid QUT username.
+          required: true
+          type: string
+        - name: Request
+          in: body
+          schema:
+            $ref: '#/definitions/EmergencyContacts'
+      responses:
+        '200':
+          description: Emergency Contacts Updated successfully.
+          schema:
+            $ref: '#/definitions/EmergencyContacts'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+  /emergency-contacts/username/{username}/type/{contactId}:
+    delete:
+      tags:
+        - EmergencyContact (CRUD)
+      summary: delete a emergency contact
+      description: delete a single emergency contact with given {contactId}
+      operationId: deleteEmergencyContact
+      parameters:
+        - name: username
+          in: path
+          required: true
+          type: string
+          description: A valid QUT username.
+        - name: contactId
+          description: a unique contact identifier provided by GET endpoint
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+    get:
+      tags:
+        - Emergency Contact (Read Only)
+      summary: Retrieve a single emergency contact with given id
+      operationId: getEmergencyContact
+      parameters:
+        - name: username
+          description: A valid QUT username.
+          in: path
+          required: true
+          type: string
+        - name: contactId
+          description: a unique contact identifier provided by GET endpoint
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Specified Emergency Contact successfully retrieved with given {contactId}
+          schema:
+            $ref: '#/definitions/EmergencyContact'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
 #------------------------- Models -------------------------#
 
 definitions:
@@ -58,8 +173,8 @@ definitions:
       type:
         type: string
         enum:
-          EMERGENCY1=1,
-          EMERGENCY2=2
+         - EMERGENCY1 
+         - EMERGENCY2
       name:
         type: string
         example: 'John Smith'
@@ -73,19 +188,16 @@ definitions:
         type: string
         example: '(04)32109876'
       lastUpdated:
-        type: date
-        example: false
+        type: string
+        example: "2015-08-10T10:40:52Z"
       dateCreated:
-        type: date
-        example: false
-    required:
-      - contactId
-      - id
+        type: string
+        example: "2015-08-20T10:40:52Z"
 
   EmergencyContacts:
     type: array
     items:
-      $ref: '#/definitions/EmergencyContact:'
+      $ref: '#/definitions/EmergencyContact'
 
   #------------------------- Responses -------------------------#
   ErrorResponse:
