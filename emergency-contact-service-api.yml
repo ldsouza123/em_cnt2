@@ -1,25 +1,17 @@
-swagger: '2.0'
+openapi: '3.0.1'
 info:
   description: Create, View, Update and delete a emergency contact phone. 
   version: '1.0'
   title: Emergency Contact Service
-  termsOfService: 'https://www.qut.edu.au/additional/privacy'
   contact:
     name: Integration Services
-    email: eis-is-is@qut.edu.au
+    email: hiq@qut.edu.au
   license:
     name: QUT
     url: 'https://www.qut.edu.au/additional/copyright'
-basePath: /qut/identity/emergency-contact/v1
-
-securityDefinitions:
-  oidc:
-    type: oauth2
-    description: Open ID Connect
-    flow: application
-    tokenUrl: https://esoe-tst.qut.edu.au/auth/realms/QUT/protocol/openid-connect/token
-    scopes:
-      openid: default scope
+servers: 
+  - url: http://qut/identity/emergency-contact/v1
+    description: IDS endpoint for emergency contact details management
 
 paths:
   /emergency-contacts/username/{username}:
@@ -29,255 +21,220 @@ paths:
       summary: Retrieve all Emergency Contacts belonging to {username}
       description: Retrieve all emergency contacts for the user associated {username}
       operationId: getAllEmergencyContacts
-      produces:
-        - application/json
       parameters:
         - name: username
           in: path
           description: A valid QUT username.
           required: true
-          type: string
+          schema:
+            type : string
       responses:
         '200':
-          description: Emergency Contacts successfully retrieved
-          schema:
-            $ref: '#/definitions/EmergencyContacts'
+          $ref: '#/components/schemas/EmergencyContacts'
         '400':
-          $ref: '#/responses/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '403':
-          $ref: '#/responses/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
     post:
       tags:
         - Emergency Contact (CRUD)
       summary: Create one to two new Emergency Contact.
       description: Create one or two new Emergency Contact for the user associated with the submitted access token.
       operationId: createEmergencyContact
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: username
           in: path
           description: A valid QUT username.
           required: true
-          type: string
-        - name: Request
-          in: body
           schema:
-            $ref: '#/definitions/EmergencyContacts'
+            type : string
       responses:
         '200':
-          description: Emergency Contacts successfully created
-          schema:
-            $ref: '#/definitions/EmergencyContacts'
+          $ref: '#/components/schemas/EmergencyContacts'
         '400':
-          $ref: '#/responses/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '403':
-          $ref: '#/responses/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
     put:
       tags:
         - Emergency Contact (CRUD)
       summary: update all emergency contacts
       description: Update emergency contacts of the user
       operationId: updateEmergencyContact
-      consumes:
-        - application/json
-      produces:
-        - application/json
       parameters:
         - name: username
           in: path
           description: A valid QUT username.
           required: true
-          type: string
-        - name: Request
-          in: body
           schema:
-            $ref: '#/definitions/EmergencyContacts'
+            type : string
       responses:
         '200':
-          description: Emergency Contacts Updated successfully.
-          schema:
-            $ref: '#/definitions/EmergencyContacts'
+          $ref: '#/components/schemas/EmergencyContacts'
         '400':
-          $ref: '#/responses/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '403':
-          $ref: '#/responses/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/responses/NotFound'
-  /emergency-contacts/username/{username}/type/{contactId}:
+          $ref: '#/components/responses/NotFound'
+  /emergency-contacts/username/{username}/type/{type}:
     delete:
       tags:
         - EmergencyContact (CRUD)
       summary: delete a emergency contact
-      description: delete a single emergency contact with given {contactId}
+      description: delete a single emergency contact with given {type}
       operationId: deleteEmergencyContact
       parameters:
         - name: username
           in: path
           required: true
-          type: string
           description: A valid QUT username.
-        - name: contactId
-          description: a unique contact identifier provided by GET endpoint
+          schema:
+            type : string
+        - name: type
           in: path
           required: true
-          type: string
+          description: A valid type 
+          schema:
+            type : string
       responses:
         '200':
-          $ref: '#/responses/Success'
+          $ref: '#/components/responses/Success'
         '400':
-          $ref: '#/responses/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '403':
-          $ref: '#/responses/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
     get:
       tags:
         - Emergency Contact (Read Only)
-      summary: Retrieve a single emergency contact with given id
+      summary: Retrieve a single emergency contact with given type
       operationId: getEmergencyContact
       parameters:
         - name: username
           description: A valid QUT username.
           in: path
           required: true
-          type: string
-        - name: contactId
-          description: a unique contact identifier provided by GET endpoint
+          schema:
+            type : string
+        - name: type
           in: path
           required: true
-          type: string
+          description: A valid type 
+          schema:
+            type : string
       responses:
         '200':
-          description: Specified Emergency Contact successfully retrieved with given {contactId}
-          schema:
-            $ref: '#/definitions/EmergencyContact'
+          $ref: '#/components/schemas/EmergencyContact'
         '400':
-          $ref: '#/responses/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '403':
-          $ref: '#/responses/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
 #------------------------- Models -------------------------#
 
-definitions:
-  EmergencyContact:
-    type: object
-    properties:
-      type:
-        type: string
-        enum:
-         - EMERGENCY1 
-         - EMERGENCY2
-      name:
-        type: string
-        example: 'John Smith'
-      homePhone:
-        type: string
-        example: '(07)32107654'
-      workPhone:
-        type: string
-        example: '(07)32104567'
-      mobile:
-        type: string
-        example: '(04)32109876'
-      lastUpdated:
-        type: string
-        example: "2015-08-10T10:40:52Z"
-      dateCreated:
-        type: string
-        example: "2015-08-20T10:40:52Z"
+components:
+  schemas:
+    EmergencyContact:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+           - EMERGENCY1 
+           - EMERGENCY2
+        name:
+          type: string
+          example: 'John Smith'
+        homePhone:
+          type: string
+          example: '(07)32107654'
+        workPhone:
+          type: string
+          example: '(07)32104567'
+        mobile:
+          type: string
+          example: '(04)32109876'
+        lastUpdated:
+          type: string
+          example: "2015-08-10T10:40:52Z"
+        dateCreated:
+          type: string
+          example: "2015-08-20T10:40:52Z"
 
-  EmergencyContacts:
-    type: array
-    items:
-      $ref: '#/definitions/EmergencyContact'
+    EmergencyContacts:
+      type: array
+      items:
+        $ref: '#/components/schemas/EmergencyContact'
 
-  #------------------------- Responses -------------------------#
-  ErrorResponse:
-    type: object
-    properties:
-      timestamp:
-        type: number
-      status:
-        type: string
-      error:
-        type: string
-      message:
-        type: string
-      exception:
-        type: string
-      path:
-        type: string
-    required:
-      - error
-      - message
-  SuccessResponse:
-    type: object
-    properties:
-      status:
-        type: string
-      message:
-        type: string
-    required:
-      - status
-      - message
+#------------------------- Responses -------------------------#
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: number
+        status:
+          type: string
+        error:
+          type: string
+        message:
+          type: string
+        exception:
+          type: string
+        path:
+          type: string
+      required:
+        - error
+        - message
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      required:
+        - status
+        - message
 
-responses:
-  Success:
-    description: requested operation was successful
-    schema:
-      $ref: '#/definitions/SuccessResponse'
-    examples:
-      application/json:
-        status: "OK"
-        message: "Requested Operation was successful"
-  Forbidden:
-    description:
-      Returned if an invalid client submits a token on behalf of a user.
-    schema:
-      $ref: '#/definitions/ErrorResponse'
-    examples:
-      application/json:
-        timestamp: 1503993519399
-        error: "Forbidden"
-        message: "Client is not authorized"
-  Unauthorized:
-    description:
-      invalid authentication token.
-    schema:
-      $ref: '#/definitions/ErrorResponse'
-    examples:
-      application/json:
-        timestamp: 1503993519399
-        error: "Unauthorized"
-        message: "Not authorized"
-  BadRequest:
-    description:
-      Returned if submitted data/params are incorrect
-    schema:
-      $ref: '#/definitions/ErrorResponse'
-    examples:
-      application/json:
-        timestamp: 1503993519399
-        error: "BadRequest"
-        message: "validation failed for some fields or params"
-  NotFound:
-    description:
-      could not find a resource for this url
-    schema:
-      $ref: '#/definitions/ErrorResponse'
-    examples:
-      application/json:
-        timestamp: 1503993519399
-        status: 404
-        error: "NotFound"
-        message: "could not find a resource for this url"
-        exception: "NotFoundException"
-        path: "/emergency-contact/test-user"
+  responses:
+    Success:
+      description: requested operation was successful
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+    Forbidden:
+      description:
+        Returned if an invalid client submits a token on behalf of a user.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description:
+        invalid authentication token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description:
+        Returned if submitted data/params are incorrect
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description:
+        could not find a resource for this url
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
